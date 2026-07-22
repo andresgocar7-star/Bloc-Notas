@@ -1,0 +1,1565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23ff1455'/%3E%3Cstop offset='40%25' stop-color='%23ff6b00'/%3E%3Cstop offset='70%25' stop-color='%23ffc400'/%3E%3Cstop offset='100%25' stop-color='%2300ff6a'/%3E%3C/linearGradient%3E%3CclipPath id='c'%3E%3Crect x='6' y='6' width='88' height='88' rx='20'/%3E%3C/clipPath%3E%3C/defs%3E%3Crect x='6' y='6' width='88' height='88' rx='20' fill='%2307090c' stroke='%2300d4ff' stroke-width='2.5'/%3E%3Cg clip-path='url(%23c)'%3E%3Crect x='6' y='6' width='88' height='30' fill='url(%23g)'/%3E%3Ccircle cx='22' cy='46' r='2.2' fill='%2300d4ff'/%3E%3Ccircle cx='34' cy='46' r='2.2' fill='%2300d4ff'/%3E%3Ccircle cx='46' cy='46' r='2.2' fill='%2300d4ff'/%3E%3Ccircle cx='58' cy='46' r='2.2' fill='%2300d4ff'/%3E%3Ccircle cx='70' cy='46' r='2.2' fill='%2300d4ff'/%3E%3Cline x1='18' y1='62' x2='82' y2='62' stroke='%231b2233' stroke-width='3'/%3E%3Cline x1='18' y1='80' x2='82' y2='80' stroke='%231b2233' stroke-width='3'/%3E%3C/g%3E%3C/svg%3E">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Quest — Andres</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Caveat:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:           #07090c;
+            --surface:      #0f1318;
+            --surface2:     #161c24;
+            --line-color:   #1b2233;
+            --margin-line:  rgba(255, 20, 80, 0.22);
+            --text:         #dce8f5;
+            --text-dim:     #4a5568;
+            --text-muted:   #252e3d;
+
+            --neon-cyan:    #00d4ff;
+            --neon-green:   #00ff6a;
+            --neon-yellow:  #ffc400;
+            --neon-pink:    #ff1455;
+            --neon-purple:  #b06aff;
+            --neon-orange:  #ff6b00;
+
+            --grad-start:   #ff1455;
+            --grad-mid1:    #ff6b00;
+            --grad-mid2:    #ffc400;
+            --grad-end:     #00ff6a;
+
+            --line-h:       50px;
+            --margin-w:     50px;
+            --radius:       14px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: radial-gradient(rgba(0, 212, 255, 0.05) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 28px 18px 90px;
+        }
+
+        /* ─── HEADER ─── */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .app-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            line-height: 1;
+            color: var(--text);
+        }
+
+        .app-title .accent {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 22px rgba(0, 212, 255, 0.55);
+        }
+
+        .app-sub {
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 7px;
+            font-weight: 500;
+        }
+
+        .gear-btn {
+            width: 46px;
+            height: 46px;
+            background: var(--surface);
+            border: 1.5px solid var(--surface2);
+            border-radius: 12px;
+            color: var(--text-dim);
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.3s, color 0.3s, box-shadow 0.3s, transform 0.4s;
+            flex-shrink: 0;
+        }
+
+        .gear-btn:hover {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 14px rgba(0,212,255,0.3);
+            transform: rotate(60deg);
+        }
+
+        .gear-btn.active {
+            transform: rotate(180deg);
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+            box-shadow: 0 0 14px rgba(255,20,85,0.35);
+        }
+
+        /* ─── PROGRESS BAR ─── */
+        .progress-section { margin-bottom: 30px; }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-label-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .progress-pct {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 900;
+            transition: color 0.6s ease;
+        }
+
+        .progress-track {
+            height: 18px;
+            background: var(--surface2);
+            border-radius: 9px;
+            border: 2.5px solid #1e2d42;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px rgba(0,212,255,0.06), inset 0 2px 6px rgba(0,0,0,0.6);
+        }
+
+        .progress-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right,
+                var(--grad-start) 0%, var(--grad-mid1) 30%,
+                var(--grad-mid2) 65%, var(--grad-end) 100%);
+        }
+
+        .progress-mask {
+            position: absolute;
+            right: 0; top: 0; bottom: 0;
+            background: var(--surface);
+            transition: width 1.15s cubic-bezier(0.35, 0, 0.2, 1);
+            border-radius: 0 7px 7px 0;
+        }
+
+        .progress-glow {
+            position: absolute;
+            top: 1px; bottom: 1px;
+            width: 3px;
+            background: rgba(255,255,255,0.8);
+            filter: blur(2px);
+            border-radius: 2px;
+            transition: left 1.15s cubic-bezier(0.35, 0, 0.2, 1), opacity 0.4s;
+            pointer-events: none;
+        }
+
+        .progress-track.complete {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 18px rgba(0,255,106,0.35), inset 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        /* ─── PRIORITY LABELS ─── */
+        .prio-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9.2px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            padding: 3.5px 9.5px;
+            border-radius: 20px;
+            border: 1px solid;
+            flex-shrink: 0;
+            backdrop-filter: blur(4px);
+        }
+
+        /* P1 — Urgente + Importante: rojo suave */
+        .prio-1 {
+            color: #ff6070;
+            background: rgba(255, 40, 70, 0.10);
+            border-color: rgba(255, 60, 80, 0.28);
+            text-shadow: 0 0 10px rgba(255, 40, 70, 0.45);
+            box-shadow: 0 0 8px rgba(255, 40, 70, 0.10) inset;
+        }
+
+        /* P2 — Importante, no urgente: amarillo suave */
+        .prio-2 {
+            color: #e8b800;
+            background: rgba(255, 196, 0, 0.09);
+            border-color: rgba(255, 196, 0, 0.26);
+            text-shadow: 0 0 10px rgba(255, 196, 0, 0.38);
+            box-shadow: 0 0 8px rgba(255, 196, 0, 0.08) inset;
+        }
+
+        /* P3 — Urgente, no importante: azul suave */
+        .prio-3 {
+            color: #40b0f0;
+            background: rgba(0, 168, 255, 0.09);
+            border-color: rgba(0, 168, 255, 0.26);
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.38);
+            box-shadow: 0 0 8px rgba(0, 168, 255, 0.08) inset;
+        }
+
+        /* P4 — Secundaria: gris neutro */
+        .prio-4 {
+            color: #5a6a7e;
+            background: rgba(90, 106, 126, 0.07);
+            border-color: rgba(90, 106, 126, 0.18);
+            text-shadow: none;
+        }
+
+        /* Mode badges (tiny) */
+        .mode-tag {
+            font-size: 11px;
+            opacity: 0.45;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        /* ─── NOTEBOOK ─── */
+        .notebook {
+            margin-bottom: 14px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1.5px solid var(--surface2);
+            background: var(--surface);
+            transition: border-color 0.25s;
+        }
+
+        .notebook:hover { border-color: #252f3f; }
+
+        .notebook-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            cursor: pointer;
+            user-select: none;
+            background: var(--surface);
+            border-bottom: 1.5px solid transparent;
+            transition: background 0.18s, border-color 0.25s;
+        }
+
+        .notebook-header:hover { background: var(--surface2); }
+        .notebook.open .notebook-header { border-bottom-color: var(--line-color); }
+
+        .nb-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nb-icon { font-size: 19px; line-height: 1; }
+
+        .nb-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+        }
+
+        .nb-badge {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-dim);
+            background: var(--surface2);
+            padding: 3px 9px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .nb-chevron {
+            color: var(--text-dim);
+            font-size: 11px;
+            transition: transform 0.28s ease;
+        }
+
+        .notebook.open .nb-chevron { transform: rotate(180deg); }
+
+        .notebook-body { display: none; position: relative; }
+
+        .notebook.open .notebook-body {
+            display: block;
+            animation: slideDown 0.22s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Red margin line */
+        .notebook-body::before {
+            content: '';
+            position: absolute;
+            left: var(--margin-w);
+            top: 0; bottom: 0;
+            width: 1.5px;
+            background: var(--margin-line);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Priority section divider inside notebook */
+        .prio-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 20px 4px calc(var(--margin-w) + 14px);
+            background: var(--bg);
+            border-bottom: 1px solid var(--line-color);
+        }
+
+        .prio-divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--line-color);
+        }
+
+        /* Each mission row */
+        .mission-item {
+            display: flex;
+            align-items: center;
+            padding: 0 16px 0 calc(var(--margin-w) + 14px);
+            min-height: var(--line-h);
+            border-bottom: 1px solid var(--line-color);
+            position: relative;
+            transition: background 0.14s;
+            gap: 10px;
+        }
+
+        .mission-item:last-child { border-bottom: none; }
+        .mission-item:hover { background: rgba(0,212,255,0.025); }
+
+        .mission-num {
+            position: absolute;
+            left: 0;
+            width: var(--margin-w);
+            text-align: center;
+            font-size: 10px;
+            color: var(--text-muted);
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .mission-check {
+            width: 22px;
+            height: 22px;
+            border: 2.5px solid #2e3d50;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: border-color 0.22s, background 0.22s, box-shadow 0.22s;
+            background: transparent;
+        }
+
+        .mission-check:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 9px rgba(0,212,255,0.3);
+        }
+
+        .mission-check.checked {
+            background: var(--neon-green);
+            border-color: var(--neon-green);
+            box-shadow: 0 0 13px rgba(0,255,106,0.55);
+            animation: popCheck 0.28s ease;
+        }
+
+        @keyframes popCheck {
+            0%   { transform: scale(1); }
+            50%  { transform: scale(1.25); }
+            100% { transform: scale(1); }
+        }
+
+        .check-mark {
+            opacity: 0;
+            color: #000;
+            font-size: 13px;
+            font-weight: 900;
+            transition: opacity 0.18s;
+            line-height: 1;
+        }
+
+        .mission-check.checked .check-mark { opacity: 1; }
+
+        .mission-text {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.2;
+            flex: 1;
+            transition: color 0.25s;
+        }
+
+        .mission-item.done .mission-text {
+            color: var(--text-dim);
+            text-decoration: line-through;
+            text-decoration-color: rgba(74,85,104,0.4);
+        }
+
+        .mission-item.done .prio-tag { opacity: 0.35; }
+
+        .nb-empty {
+            padding: 22px 20px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        /* ─── SETTINGS VIEW ─── */
+        .settings-view { display: none; }
+        .settings-view.active { display: block; animation: fadeUp 0.26s ease; }
+        .main-view.hidden { display: none; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .settings-heading {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--neon-pink);
+            text-shadow: 0 0 16px rgba(255,20,85,0.4);
+            margin-bottom: 22px;
+            padding-bottom: 14px;
+            border-bottom: 1.5px solid var(--surface2);
+        }
+
+        .settings-block {
+            margin-bottom: 18px;
+            background: var(--surface);
+            border: 1.5px solid var(--surface2);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .settings-block-head {
+            padding: 12px 16px;
+            background: var(--surface2);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--line-color);
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .settings-row:last-of-type { border-bottom: none; }
+
+        .s-name {
+            flex: 1;
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            color: var(--text);
+            min-width: 0;
+        }
+
+        .s-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1.5px solid var(--neon-cyan);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 7px;
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            outline: none;
+            box-shadow: 0 0 10px rgba(0,212,255,0.15);
+        }
+
+        .btn-ic {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 1.5px solid var(--surface2);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.18s;
+            flex-shrink: 0;
+        }
+
+        .btn-ic.edit:hover   { border-color: var(--neon-cyan);  background: rgba(0,212,255,0.08); }
+        .btn-ic.del:hover    { border-color: var(--neon-pink);  background: rgba(255,20,85,0.08); }
+        .btn-ic.save:hover   { border-color: var(--neon-green); background: rgba(0,255,106,0.08); }
+        .btn-ic.cancel:hover { border-color: var(--text-dim);   background: rgba(255,255,255,0.04); }
+
+        /* Add mission form */
+        .add-form {
+            padding: 14px 16px;
+            border-top: 1.5px dashed var(--line-color);
+            background: rgba(0,212,255,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .add-input {
+            width: 100%;
+            background: var(--bg);
+            border: 1.5px solid var(--surface2);
+            color: var(--text);
+            padding: 9px 14px;
+            border-radius: 8px;
+            font-family: 'Caveat', cursive;
+            font-size: 17px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .add-input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0,212,255,0.18);
+        }
+
+        .add-input::placeholder { color: var(--text-muted); }
+
+        /* Selector rows (priority + mode) */
+        .selector-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .selector-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            white-space: nowrap;
+            min-width: 48px;
+        }
+
+        /* Pill selector button */
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 11px;
+            border-radius: 20px;
+            border: 1.5px solid var(--surface2);
+            background: transparent;
+            color: var(--text-dim);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.18s;
+            white-space: nowrap;
+        }
+
+        .pill:hover { border-color: var(--text-dim); color: var(--text); }
+
+        .pill.selected-p1 { color: #ff6070; background: rgba(255,40,70,0.12); border-color: rgba(255,60,80,0.4); text-shadow: 0 0 8px rgba(255,40,70,0.5); }
+        .pill.selected-p2 { color: #e8b800; background: rgba(255,196,0,0.11); border-color: rgba(255,196,0,0.36); text-shadow: 0 0 8px rgba(255,196,0,0.45); }
+        .pill.selected-p3 { color: #40b0f0; background: rgba(0,168,255,0.11); border-color: rgba(0,168,255,0.36); text-shadow: 0 0 8px rgba(0,168,255,0.45); }
+        .pill.selected-p4 { color: #8899aa; background: rgba(90,106,126,0.12); border-color: rgba(90,106,126,0.3); }
+
+        .pill.selected-temporal   { color: var(--neon-pink);   background: rgba(255,20,85,0.10);  border-color: rgba(255,20,85,0.35); }
+        .pill.selected-recurrent  { color: var(--neon-purple); background: rgba(176,106,255,0.10); border-color: rgba(176,106,255,0.35); }
+
+        .add-bottom-row {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-add {
+            background: var(--neon-cyan);
+            color: #000;
+            border: none;
+            padding: 9px 22px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-add:hover {
+            background: #fff;
+            box-shadow: 0 0 18px rgba(0,212,255,0.5);
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+
+        /* ─── LOGO ─── */
+        .app-logo { width: 40px; height: 40px; flex-shrink: 0; }
+        .title-block { display: flex; align-items: center; gap: 12px; }
+
+        /* ─── LOADING SCREEN ─── */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            transition: opacity 0.4s ease;
+        }
+        #loading-screen.hidden { opacity: 0; pointer-events: none; }
+        #loading-screen .app-logo { width: 88px; height: 88px; animation: logoPulse 1.4s ease-in-out infinite; }
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50%      { transform: scale(1.06); opacity: 0.75; }
+        }
+        .loading-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        #body-projects::before { display: none; }
+
+        /* ─── PROYECTOS (retomar) ─── */
+        .project-card {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--line-color);
+        }
+        .project-card:last-child { border-bottom: none; }
+        .project-name {
+            font-family: 'Caveat', cursive;
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .project-notes {
+            font-size: 13px;
+            color: var(--text-dim);
+            line-height: 1.5;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+        }
+        .project-notes.empty { font-style: italic; opacity: 0.6; }
+        .project-steps { display: flex; flex-direction: column; gap: 6px; }
+        .project-step {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            cursor: pointer;
+        }
+        .step-check {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #2e3d50;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .step-check.checked {
+            background: var(--neon-purple);
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 10px rgba(176,106,255,0.5);
+        }
+        .step-check .check-mark { font-size: 11px; }
+        .project-step-text {
+            font-size: 14px;
+            color: var(--text);
+        }
+        .project-step.done .project-step-text {
+            color: var(--text-dim);
+            text-decoration: line-through;
+        }
+
+        /* Settings: project editor */
+        .proj-settings-card {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--line-color);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .proj-settings-card:last-of-type { border-bottom: none; }
+        .proj-name-row { display: flex; align-items: center; gap: 8px; }
+        .textarea-row { position: relative; }
+        .add-textarea {
+            width: 100%;
+            min-height: 70px;
+            background: var(--bg);
+            border: 1.5px solid var(--surface2);
+            color: var(--text);
+            padding: 9px 40px 9px 14px;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            outline: none;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        .add-textarea:focus { border-color: var(--neon-purple); }
+        .mic-btn {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            width: 26px;
+            height: 26px;
+            border-radius: 7px;
+            border: 1.5px solid var(--surface2);
+            background: var(--surface);
+            color: var(--text-dim);
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .mic-btn:hover { border-color: var(--neon-purple); color: var(--neon-purple); }
+        .mic-btn.recording {
+            color: #000;
+            background: var(--neon-pink);
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 12px rgba(255,20,85,0.6);
+            animation: popCheck 0.9s ease-in-out infinite;
+        }
+        .step-edit-row { display: flex; align-items: center; gap: 8px; }
+        .step-edit-input {
+            flex: 1;
+            background: var(--bg);
+            border: 1.5px solid var(--surface2);
+            color: var(--text);
+            padding: 7px 12px;
+            border-radius: 7px;
+            font-size: 13px;
+            outline: none;
+        }
+        .step-edit-input:focus { border-color: var(--neon-purple); }
+    </style>
+</head>
+<body>
+<div id="loading-screen">
+    <svg class="app-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+            <linearGradient id="logoGradSplash" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ff1455"/>
+                <stop offset="40%" stop-color="#ff6b00"/>
+                <stop offset="70%" stop-color="#ffc400"/>
+                <stop offset="100%" stop-color="#00ff6a"/>
+            </linearGradient>
+            <clipPath id="logoClipSplash"><rect x="6" y="6" width="88" height="88" rx="20"/></clipPath>
+        </defs>
+        <rect x="6" y="6" width="88" height="88" rx="20" fill="#07090c" stroke="#00d4ff" stroke-width="2.5"/>
+        <g clip-path="url(#logoClipSplash)">
+            <rect x="6" y="6" width="88" height="30" fill="url(#logoGradSplash)"/>
+            <circle cx="22" cy="46" r="2.2" fill="#00d4ff"/>
+            <circle cx="34" cy="46" r="2.2" fill="#00d4ff"/>
+            <circle cx="46" cy="46" r="2.2" fill="#00d4ff"/>
+            <circle cx="58" cy="46" r="2.2" fill="#00d4ff"/>
+            <circle cx="70" cy="46" r="2.2" fill="#00d4ff"/>
+            <line x1="18" y1="62" x2="82" y2="62" stroke="#1b2233" stroke-width="3"/>
+            <line x1="18" y1="80" x2="82" y2="80" stroke="#1b2233" stroke-width="3"/>
+        </g>
+    </svg>
+    <div class="loading-text">Sincronizando…</div>
+</div>
+<div class="page-wrapper">
+
+    <!-- HEADER -->
+    <header class="app-header">
+        <div class="title-block">
+            <svg class="app-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <defs>
+                    <linearGradient id="logoGradHeader" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#ff1455"/>
+                        <stop offset="40%" stop-color="#ff6b00"/>
+                        <stop offset="70%" stop-color="#ffc400"/>
+                        <stop offset="100%" stop-color="#00ff6a"/>
+                    </linearGradient>
+                    <clipPath id="logoClipHeader"><rect x="6" y="6" width="88" height="88" rx="20"/></clipPath>
+                </defs>
+                <rect x="6" y="6" width="88" height="88" rx="20" fill="#07090c" stroke="#00d4ff" stroke-width="2.5"/>
+                <g clip-path="url(#logoClipHeader)">
+                    <rect x="6" y="6" width="88" height="30" fill="url(#logoGradHeader)"/>
+                    <circle cx="22" cy="46" r="2.2" fill="#00d4ff"/>
+                    <circle cx="34" cy="46" r="2.2" fill="#00d4ff"/>
+                    <circle cx="46" cy="46" r="2.2" fill="#00d4ff"/>
+                    <circle cx="58" cy="46" r="2.2" fill="#00d4ff"/>
+                    <circle cx="70" cy="46" r="2.2" fill="#00d4ff"/>
+                    <line x1="18" y1="62" x2="82" y2="62" stroke="#1b2233" stroke-width="3"/>
+                    <line x1="18" y1="80" x2="82" y2="80" stroke="#1b2233" stroke-width="3"/>
+                </g>
+            </svg>
+            <div>
+                <div class="app-title">Life <span class="accent">Quest</span></div>
+                <div class="app-sub">Sistema de misiones — Andres</div>
+            </div>
+        </div>
+        <button class="gear-btn" id="gear-btn" onclick="toggleSettings()">⚙</button>
+    </header>
+
+    <!-- MAIN VIEW -->
+    <div class="main-view" id="main-view">
+
+        <div class="progress-section">
+            <div class="progress-label">
+                <span class="progress-label-text">⚡ Progreso diario</span>
+                <span class="progress-pct" id="pct-text">0%</span>
+            </div>
+            <div class="progress-track" id="progress-track">
+                <div class="progress-gradient"></div>
+                <div class="progress-mask" id="progress-mask" style="width:100%"></div>
+                <div class="progress-glow" id="progress-glow" style="opacity:0; left:-4px"></div>
+            </div>
+        </div>
+
+        <!-- Daily — open by default -->
+        <div class="notebook open" id="nb-daily">
+            <div class="notebook-header" onclick="toggleNotebook('daily')">
+                <div class="nb-left">
+                    <span class="nb-icon">📋</span>
+                    <span class="nb-title" style="color:var(--neon-cyan)">Misiones del Día</span>
+                    <span class="nb-badge" id="badge-daily">0/0</span>
+                </div>
+                <span class="nb-chevron">▼</span>
+            </div>
+            <div class="notebook-body" id="body-daily"></div>
+        </div>
+
+        <!-- Weekly — collapsed -->
+        <div class="notebook" id="nb-weekly">
+            <div class="notebook-header" onclick="toggleNotebook('weekly')">
+                <div class="nb-left">
+                    <span class="nb-icon">📅</span>
+                    <span class="nb-title" style="color:var(--neon-yellow)">Metas de la Semana</span>
+                    <span class="nb-badge" id="badge-weekly">0/0</span>
+                </div>
+                <span class="nb-chevron">▼</span>
+            </div>
+            <div class="notebook-body" id="body-weekly"></div>
+        </div>
+
+        <!-- Monthly — collapsed -->
+        <div class="notebook" id="nb-monthly">
+            <div class="notebook-header" onclick="toggleNotebook('monthly')">
+                <div class="nb-left">
+                    <span class="nb-icon">🗓️</span>
+                    <span class="nb-title" style="color:var(--neon-purple)">Metas del Mes</span>
+                    <span class="nb-badge" id="badge-monthly">0/0</span>
+                </div>
+                <span class="nb-chevron">▼</span>
+            </div>
+            <div class="notebook-body" id="body-monthly"></div>
+        </div>
+
+        <!-- Annual — collapsed -->
+        <div class="notebook" id="nb-annual">
+            <div class="notebook-header" onclick="toggleNotebook('annual')">
+                <div class="nb-left">
+                    <span class="nb-icon">🏆</span>
+                    <span class="nb-title" style="color:var(--neon-pink)">Metas del Año</span>
+                    <span class="nb-badge" id="badge-annual">0/0</span>
+                </div>
+                <span class="nb-chevron">▼</span>
+            </div>
+            <div class="notebook-body" id="body-annual"></div>
+        </div>
+
+        <!-- Projects — collapsed -->
+        <div class="notebook" id="nb-projects">
+            <div class="notebook-header" onclick="toggleNotebook('projects')">
+                <div class="nb-left">
+                    <span class="nb-icon">🔁</span>
+                    <span class="nb-title" style="color:var(--neon-purple)">Retomar Proyectos</span>
+                    <span class="nb-badge" id="badge-projects">0</span>
+                </div>
+                <span class="nb-chevron">▼</span>
+            </div>
+            <div class="notebook-body" id="body-projects"></div>
+        </div>
+
+    </div>
+
+    <!-- SETTINGS VIEW -->
+    <div class="settings-view" id="settings-view">
+        <div class="settings-heading">⚙ Terminal de Ajustes</div>
+        <div id="settings-content"></div>
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-database-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD8rIuindVvtU9BiZaIKJgl0g3eUTyfFfw",
+  authDomain: "bloc-notas-f3b0c.firebaseapp.com",
+  databaseURL: "https://bloc-notas-f3b0c-default-rtdb.firebaseio.com",
+  projectId: "bloc-notas-f3b0c",
+  storageBucket: "bloc-notas-f3b0c.firebasestorage.app",
+  messagingSenderId: "34309096815",
+  appId: "1:34309096815:web:564749135eae2304d3149a"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const stateRef = db.ref('lifequest_state');
+
+const KEY = 'lifequest_v2';
+
+const TYPES = [
+    { key:'daily',   label:'Misiones del Día',       icon:'📋', color:'var(--neon-cyan)'   },
+    { key:'weekly',  label:'Metas de la Semana',     icon:'📅', color:'var(--neon-yellow)' },
+    { key:'monthly', label:'Metas del Mes',          icon:'🗓️', color:'var(--neon-purple)' },
+    { key:'annual',  label:'Metas del Año',          icon:'🏆', color:'var(--neon-pink)'   }
+];
+
+/* Priority config */
+const PRIOS = [
+    { val:1, cls:'prio-1', pill:'selected-p1', dot:'🔴', short:'U+I',  label:'Urgente + Importante'  },
+    { val:2, cls:'prio-2', pill:'selected-p2', dot:'🟡', short:'I',    label:'Importante, no urgente'},
+    { val:3, cls:'prio-3', pill:'selected-p3', dot:'🔵', short:'U',    label:'Urgente, no importante'},
+    { val:4, cls:'prio-4', pill:'selected-p4', dot:'⚪', short:'SEC',  label:'Secundaria'            }
+];
+
+/* Mode config */
+const MODES = [
+    { val:'temporal',  pill:'selected-temporal',  icon:'🗑️', label:'Temporal'   },
+    { val:'recurrent', pill:'selected-recurrent',  icon:'🔒', label:'Recurrente' }
+];
+
+let state = {
+    missions: { daily:[], weekly:[], monthly:[], annual:[] },
+    projects: [],
+    lastDate: null
+};
+
+let firstLoad = true;
+
+/* ─── PERSISTENCE (Firebase Realtime Database, con cache local) ─── */
+function normalizeState() {
+    ['weekly','monthly','annual'].forEach(k => { if (!state.missions[k]) state.missions[k] = []; });
+    if (!state.missions.daily) state.missions.daily = [];
+    if (!Array.isArray(state.projects)) state.projects = [];
+}
+
+function applyMidnightResetIfNeeded() {
+    const today = new Date().toLocaleDateString('es-CO');
+    if (state.lastDate !== today) {
+        state.missions.daily = state.missions.daily
+            .filter(m => m.mode !== 'temporal')
+            .map(m => ({ ...m, done: false }));
+        state.lastDate = today;
+        saveState();
+        return true;
+    }
+    return false;
+}
+
+function loadState() {
+    // Cache local para que la app no se vea vacia mientras llega Firebase
+    const raw = localStorage.getItem(KEY);
+    if (raw) { try { state = JSON.parse(raw); normalizeState(); } catch(e) {} }
+
+    stateRef.on('value', snap => {
+        const remote = snap.val();
+        if (remote) {
+            state = remote;
+            normalizeState();
+        } else {
+            normalizeState();
+        }
+
+        const hideLoading = () => {
+            const ls = document.getElementById('loading-screen');
+            if (ls) ls.classList.add('hidden');
+        };
+
+        if (firstLoad) {
+            applyMidnightResetIfNeeded();
+            firstLoad = false;
+            renderAll();
+            hideLoading();
+        } else {
+            renderAll();
+        }
+    }, err => {
+        console.error('Firebase error:', err);
+        normalizeState();
+        renderAll();
+        const ls = document.getElementById('loading-screen');
+        if (ls) ls.classList.add('hidden');
+    });
+}
+
+function saveState() {
+    localStorage.setItem(KEY, JSON.stringify(state));
+    stateRef.set(state);
+}
+
+function uid() { return '_' + Math.random().toString(36).slice(2, 10); }
+
+/* Schedule next midnight reset */
+function scheduleMidnight() {
+    const now  = new Date();
+    const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
+    const ms   = next - now;
+    setTimeout(() => { applyMidnightResetIfNeeded(); renderAll(); scheduleMidnight(); }, ms);
+}
+
+/* ─── RENDER ─── */
+function renderAll() {
+    TYPES.forEach(t => renderSection(t.key));
+    renderProjectsSection();
+    requestAnimationFrame(() => requestAnimationFrame(updateProgress));
+}
+
+function sortedMissions(type) {
+    return [...(state.missions[type] || [])].sort((a,b) => (a.prio||4) - (b.prio||4));
+}
+
+function renderSection(type) {
+    const list  = sortedMissions(type);
+    const body  = document.getElementById('body-' + type);
+    const badge = document.getElementById('badge-' + type);
+    const raw   = state.missions[type] || [];
+
+    badge.textContent = raw.filter(m => m.done).length + '/' + raw.length;
+
+    if (list.length === 0) {
+        body.innerHTML = `<div class="nb-empty">Sin misiones — abre ajustes (⚙) para agregar.</div>`;
+        return;
+    }
+
+    let html = '';
+    let lastPrio = null;
+    let lineNum  = 0;
+
+    list.forEach(m => {
+        const p = PRIOS.find(p => p.val === (m.prio || 4));
+
+        // Priority divider when group changes
+        if (m.prio !== lastPrio) {
+            html += `<div class="prio-divider">
+                <span class="prio-tag ${p.cls}">${p.dot} ${p.short}</span>
+                <div class="prio-divider-line"></div>
+            </div>`;
+            lastPrio = m.prio;
+        }
+
+        lineNum++;
+        const modeIcon = m.mode === 'temporal' ? '🗑️' : (m.mode === 'recurrent' ? '🔒' : '');
+
+        html += `<div class="mission-item${m.done ? ' done' : ''}" id="mi-${m.id}">
+            <span class="mission-num">${String(lineNum).padStart(2,'0')}</span>
+            <div class="mission-check${m.done ? ' checked' : ''}" onclick="toggleMission('${type}','${m.id}')">
+                <span class="check-mark">✓</span>
+            </div>
+            <span class="mission-text">${escHtml(m.name)}</span>
+            ${modeIcon ? `<span class="mode-tag" title="${m.mode}">${modeIcon}</span>` : ''}
+            <span class="prio-tag ${p.cls}">${p.dot} ${p.short}</span>
+        </div>`;
+    });
+
+    body.innerHTML = html;
+}
+
+/* ─── PROGRESS BAR ─── */
+function updateProgress() {
+    const list  = state.missions.daily || [];
+    const total = list.length;
+    const done  = list.filter(m => m.done).length;
+    const pct   = total === 0 ? 0 : Math.round((done / total) * 100);
+
+    const mask  = document.getElementById('progress-mask');
+    const glow  = document.getElementById('progress-glow');
+    const pctEl = document.getElementById('pct-text');
+    const track = document.getElementById('progress-track');
+
+    mask.style.width = (100 - pct) + '%';
+
+    if (pct > 0 && pct < 100) {
+        glow.style.left    = 'calc(' + pct + '% - 2px)';
+        glow.style.opacity = '0.75';
+    } else {
+        glow.style.opacity = '0';
+    }
+
+    pctEl.textContent = pct + '%';
+
+    if      (pct === 100) { pctEl.style.color = 'var(--neon-green)';  track.classList.add('complete'); }
+    else if (pct >= 66)   { pctEl.style.color = 'var(--neon-yellow)'; track.classList.remove('complete'); }
+    else if (pct >= 33)   { pctEl.style.color = 'var(--neon-orange)'; track.classList.remove('complete'); }
+    else                  { pctEl.style.color = 'var(--neon-pink)';   track.classList.remove('complete'); }
+}
+
+/* ─── TOGGLE MISSION ─── */
+function toggleMission(type, id) {
+    const m = (state.missions[type] || []).find(m => m.id === id);
+    if (!m) return;
+    m.done = !m.done;
+    saveState();
+    renderSection(type);
+    if (type === 'daily') updateProgress();
+}
+
+/* ─── ACCORDION ─── */
+function toggleNotebook(type) {
+    document.getElementById('nb-' + type).classList.toggle('open');
+}
+
+/* ─── SETTINGS ─── */
+let settingsOpen = false;
+
+/* Per-section add-form state (priority & mode selections) */
+const addState = {};
+TYPES.forEach(t => { addState[t.key] = { prio: 1, mode: 'recurrent' }; });
+
+function toggleSettings() {
+    settingsOpen = !settingsOpen;
+    const gear    = document.getElementById('gear-btn');
+    const mainV   = document.getElementById('main-view');
+    const setV    = document.getElementById('settings-view');
+
+    if (settingsOpen) {
+        gear.classList.add('active');
+        mainV.classList.add('hidden');
+        setV.classList.add('active');
+        renderSettings();
+    } else {
+        gear.classList.remove('active');
+        mainV.classList.remove('hidden');
+        setV.classList.remove('active');
+        renderAll();
+    }
+}
+
+function renderSettings() {
+    document.getElementById('settings-content').innerHTML =
+        TYPES.map(t => buildSettingsBlock(t)).join('') +
+        `<div id="projects-settings-holder">${renderProjectsSettingsBlock()}</div>`;
+}
+
+function buildSettingsBlock(t) {
+    return `
+    <div class="settings-block">
+        <div class="settings-block-head" style="color:${t.color}">
+            ${t.icon} &nbsp;${t.label}
+        </div>
+        <div id="slist-${t.key}">${buildSettingsList(t.key)}</div>
+        ${buildAddForm(t.key)}
+    </div>`;
+}
+
+function buildSettingsList(type) {
+    const list = sortedMissions(type);
+    if (list.length === 0)
+        return `<div class="nb-empty">Sin misiones todavía.</div>`;
+
+    return list.map(m => {
+        const p = PRIOS.find(p => p.val === (m.prio||4));
+        const modeIcon = m.mode === 'temporal' ? '🗑️' : '🔒';
+        return `
+        <div class="settings-row" id="srow-${m.id}">
+            <span class="prio-tag ${p.cls}">${p.dot} ${p.short}</span>
+            <span class="mode-tag" style="opacity:0.6" title="${m.mode}">${modeIcon}</span>
+            <span class="s-name">${escHtml(m.name)}</span>
+            <button class="btn-ic edit"  onclick="startEdit('${type}','${m.id}')" title="Editar">✏️</button>
+            <button class="btn-ic del"   onclick="delMission('${type}','${m.id}')" title="Eliminar">🗑️</button>
+        </div>`;
+    }).join('');
+}
+
+function buildAddForm(type) {
+    const as = addState[type];
+
+    const prioPills = PRIOS.map(p =>
+        `<button class="pill${as.prio === p.val ? ' ' + p.pill : ''}"
+            onclick="setAddPrio('${type}',${p.val})">${p.dot} ${p.short}</button>`
+    ).join('');
+
+    const modePills = MODES.map(mo =>
+        `<button class="pill${as.mode === mo.val ? ' ' + mo.pill : ''}"
+            onclick="setAddMode('${type}','${mo.val}')">${mo.icon} ${mo.label}</button>`
+    ).join('');
+
+    return `
+    <div class="add-form">
+        <input class="add-input"
+               id="add-${type}"
+               placeholder="Nueva misión…"
+               onkeydown="if(event.key==='Enter') addMission('${type}')">
+        <div class="selector-row">
+            <span class="selector-label">Prioridad</span>
+            ${prioPills}
+        </div>
+        <div class="selector-row">
+            <span class="selector-label">Tipo</span>
+            ${modePills}
+        </div>
+        <div class="add-bottom-row">
+            <button class="btn-add" onclick="addMission('${type}')">+ AGREGAR</button>
+        </div>
+    </div>`;
+}
+
+function setAddPrio(type, val) {
+    addState[type].prio = val;
+    refreshAddForm(type);
+}
+
+function setAddMode(type, val) {
+    addState[type].mode = val;
+    refreshAddForm(type);
+}
+
+function refreshAddForm(type) {
+    // Preserve input value across re-render
+    const inp = document.getElementById('add-' + type);
+    const prev = inp ? inp.value : '';
+    const block = inp ? inp.closest('.settings-block') : null;
+    if (!block) return;
+    const formEl = block.querySelector('.add-form');
+    const t = TYPES.find(t => t.key === type);
+    formEl.outerHTML = buildAddForm(type);
+    const newInp = document.getElementById('add-' + type);
+    if (newInp) { newInp.value = prev; newInp.focus(); }
+}
+
+function renderSubList(type) {
+    document.getElementById('slist-' + type).innerHTML = buildSettingsList(type);
+}
+
+function addMission(type) {
+    const input = document.getElementById('add-' + type);
+    const name  = input.value.trim();
+    if (!name) { input.focus(); return; }
+    const as = addState[type];
+    state.missions[type].push({
+        id: uid(), name, done: false,
+        prio: as.prio, mode: as.mode
+    });
+    input.value = '';
+    saveState();
+    renderSubList(type);
+    input.focus();
+}
+
+function delMission(type, id) {
+    state.missions[type] = (state.missions[type] || []).filter(m => m.id !== id);
+    saveState();
+    renderSubList(type);
+}
+
+function startEdit(type, id) {
+    const m   = (state.missions[type] || []).find(m => m.id === id);
+    if (!m) return;
+    const row = document.getElementById('srow-' + id);
+    row.innerHTML = `
+        <input class="s-input" id="ei-${id}" value="${escAttr(m.name)}"
+               onkeydown="if(event.key==='Enter') saveEdit('${type}','${id}');
+                          if(event.key==='Escape') renderSubList('${type}');">
+        <button class="btn-ic save"   onclick="saveEdit('${type}','${id}')"  title="Guardar">✔️</button>
+        <button class="btn-ic cancel" onclick="renderSubList('${type}')"      title="Cancelar">✖️</button>`;
+    document.getElementById('ei-' + id).focus();
+}
+
+function saveEdit(type, id) {
+    const input = document.getElementById('ei-' + id);
+    const val   = input ? input.value.trim() : '';
+    if (!val) return;
+    const m = (state.missions[type] || []).find(m => m.id === id);
+    if (m) { m.name = val; saveState(); }
+    renderSubList(type);
+}
+
+/* ─── PROYECTOS: VISTA PRINCIPAL ─── */
+function renderProjectsSection() {
+    const body  = document.getElementById('body-projects');
+    const badge = document.getElementById('badge-projects');
+    const list  = state.projects || [];
+
+    badge.textContent = String(list.length);
+
+    if (list.length === 0) {
+        body.innerHTML = `<div class="nb-empty">Sin proyectos — abre ajustes (⚙) para agregar uno.</div>`;
+        return;
+    }
+
+    body.innerHTML = list.map(p => {
+        const steps = p.steps || [];
+        const stepsHtml = steps.length ? `<div class="project-steps">${
+            steps.map(s => `
+            <div class="project-step${s.done ? ' done' : ''}" onclick="toggleStep('${p.id}','${s.id}')">
+                <div class="step-check${s.done ? ' checked' : ''}"><span class="check-mark" style="opacity:${s.done?1:0}">✓</span></div>
+                <span class="project-step-text">${escHtml(s.text)}</span>
+            </div>`).join('')
+        }</div>` : '';
+        const notesHtml = p.notes
+            ? `<div class="project-notes">${escHtml(p.notes)}</div>`
+            : `<div class="project-notes empty">Sin notas todavia.</div>`;
+        return `
+        <div class="project-card">
+            <div class="project-name">${escHtml(p.name)}</div>
+            ${notesHtml}
+            ${stepsHtml}
+        </div>`;
+    }).join('');
+}
+
+function toggleStep(projId, stepId) {
+    const p = (state.projects || []).find(p => p.id === projId);
+    if (!p) return;
+    const s = (p.steps || []).find(s => s.id === stepId);
+    if (!s) return;
+    s.done = !s.done;
+    saveState();
+    renderProjectsSection();
+}
+
+/* ─── PROYECTOS: AJUSTES ─── */
+function renderProjectsSettingsBlock() {
+    const list = state.projects || [];
+    const cards = list.map(p => buildProjectSettingsCard(p)).join('') ||
+        `<div class="nb-empty">Sin proyectos todavia.</div>`;
+
+    return `
+    <div class="settings-block">
+        <div class="settings-block-head" style="color:var(--neon-purple)">
+            🔁 &nbsp;Retomar Proyectos
+        </div>
+        <div id="proj-list">${cards}</div>
+        <div class="add-form">
+            <input class="add-input" id="new-proj-name" placeholder="Nombre del proyecto…"
+                   onkeydown="if(event.key==='Enter') addProject()">
+            <div class="add-bottom-row">
+                <button class="btn-add" onclick="addProject()">+ AGREGAR PROYECTO</button>
+            </div>
+        </div>
+    </div>`;
+}
+
+function buildProjectSettingsCard(p) {
+    const steps = p.steps || [];
+    const stepsHtml = steps.map(s => `
+        <div class="step-edit-row" id="step-${s.id}">
+            <input type="checkbox" ${s.done ? 'checked' : ''} onchange="toggleStep('${p.id}','${s.id}')">
+            <span class="s-name" style="font-family:'Inter',sans-serif;font-size:13px;">${escHtml(s.text)}</span>
+            <button class="btn-ic del" onclick="delStep('${p.id}','${s.id}')" title="Eliminar paso">🗑️</button>
+        </div>`).join('');
+
+    return `
+    <div class="proj-settings-card" id="proj-${p.id}">
+        <div class="proj-name-row">
+            <input class="add-input" id="pname-${p.id}" value="${escAttr(p.name)}"
+                   onchange="renameProject('${p.id}', this.value)">
+            <button class="btn-ic del" onclick="delProject('${p.id}')" title="Eliminar proyecto">🗑️</button>
+        </div>
+        <div class="textarea-row">
+            <textarea class="add-textarea" id="pnotes-${p.id}"
+                      placeholder="En que ibas, que sigue…"
+                      onchange="saveProjectNotes('${p.id}', this.value)">${escHtml(p.notes || '')}</textarea>
+            <button class="mic-btn" id="mic-${p.id}" onclick="toggleDictation('${p.id}')" title="Dictar por voz">🎤</button>
+        </div>
+        <div class="project-steps">${stepsHtml}</div>
+        <div class="step-edit-row">
+            <input class="step-edit-input" id="newstep-${p.id}" placeholder="Nuevo paso…"
+                   onkeydown="if(event.key==='Enter') addStep('${p.id}')">
+            <button class="btn-ic edit" onclick="addStep('${p.id}')" title="Agregar paso">➕</button>
+        </div>
+    </div>`;
+}
+
+function renderProjectsSettings() {
+    const holder = document.getElementById('projects-settings-holder');
+    if (holder) holder.innerHTML = renderProjectsSettingsBlock();
+}
+
+function addProject() {
+    const input = document.getElementById('new-proj-name');
+    const name  = input.value.trim();
+    if (!name) { input.focus(); return; }
+    state.projects.push({ id: uid(), name, notes: '', steps: [] });
+    input.value = '';
+    saveState();
+    renderProjectsSettings();
+}
+
+function delProject(id) {
+    state.projects = (state.projects || []).filter(p => p.id !== id);
+    saveState();
+    renderProjectsSettings();
+}
+
+function renameProject(id, val) {
+    const p = (state.projects || []).find(p => p.id === id);
+    if (!p) return;
+    const name = val.trim();
+    if (!name) return;
+    p.name = name;
+    saveState();
+}
+
+function saveProjectNotes(id, val) {
+    const p = (state.projects || []).find(p => p.id === id);
+    if (!p) return;
+    p.notes = val;
+    saveState();
+}
+
+function addStep(projId) {
+    const input = document.getElementById('newstep-' + projId);
+    const text  = input.value.trim();
+    if (!text) { input.focus(); return; }
+    const p = (state.projects || []).find(p => p.id === projId);
+    if (!p) return;
+    if (!p.steps) p.steps = [];
+    p.steps.push({ id: uid(), text, done: false });
+    input.value = '';
+    saveState();
+    renderProjectsSettings();
+}
+
+function delStep(projId, stepId) {
+    const p = (state.projects || []).find(p => p.id === projId);
+    if (!p) return;
+    p.steps = (p.steps || []).filter(s => s.id !== stepId);
+    saveState();
+    renderProjectsSettings();
+}
+
+/* ─── DICTADO POR VOZ (nativo del navegador) ─── */
+let activeRecognition = null;
+let activeMicProjId   = null;
+
+function toggleDictation(projId) {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRec) {
+        alert('El dictado por voz no esta disponible en este navegador. Puedes usar el microfono del teclado en su lugar.');
+        return;
+    }
+
+    if (activeRecognition && activeMicProjId === projId) {
+        activeRecognition.stop();
+        return;
+    }
+    if (activeRecognition) { activeRecognition.stop(); }
+
+    const recog = new SpeechRec();
+    recog.lang = 'es-CO';
+    recog.continuous = true;
+    recog.interimResults = false;
+
+    const micBtn  = document.getElementById('mic-' + projId);
+    const textArea = document.getElementById('pnotes-' + projId);
+    if (micBtn) micBtn.classList.add('recording');
+
+    recog.onresult = e => {
+        let addition = '';
+        for (let i = e.resultIndex; i < e.results.length; i++) {
+            addition += e.results[i][0].transcript;
+        }
+        if (textArea && addition.trim()) {
+            textArea.value = (textArea.value ? textArea.value + ' ' : '') + addition.trim();
+        }
+    };
+    recog.onerror = () => { stopDictation(projId); };
+    recog.onend   = () => {
+        if (activeMicProjId === projId) {
+            stopDictation(projId);
+            if (textArea) saveProjectNotes(projId, textArea.value);
+        }
+    };
+
+    activeRecognition = recog;
+    activeMicProjId   = projId;
+    recog.start();
+}
+
+function stopDictation(projId) {
+    const micBtn = document.getElementById('mic-' + projId);
+    if (micBtn) micBtn.classList.remove('recording');
+    activeRecognition = null;
+    activeMicProjId   = null;
+}
+
+/* ─── HELPERS ─── */
+function escHtml(s) {
+    return String(s)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function escAttr(s) { return escHtml(s); }
+
+/* ─── INIT ─── */
+loadState();
+scheduleMidnight();
+</script>
+</body>
+</html>
