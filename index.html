@@ -1003,10 +1003,28 @@ let state = {
 let firstLoad = true;
 
 /* ─── PERSISTENCE (Firebase Realtime Database, con cache local) ─── */
+function toArray(x) {
+    if (Array.isArray(x)) return x;
+    if (x && typeof x === 'object') return Object.values(x);
+    return [];
+}
+
 function normalizeState() {
-    ['weekly','monthly','annual'].forEach(k => { if (!state.missions[k]) state.missions[k] = []; });
-    if (!state.missions.daily) state.missions.daily = [];
-    if (!Array.isArray(state.projects)) state.projects = [];
+    if (!state || typeof state !== 'object') state = {};
+    if (!state.missions || typeof state.missions !== 'object') state.missions = {};
+
+    ['daily','weekly','monthly','annual'].forEach(k => {
+        state.missions[k] = toArray(state.missions[k]);
+    });
+
+    state.projects = toArray(state.projects).map(p => ({
+        id: p.id || uid(),
+        name: p.name || '',
+        notes: p.notes || '',
+        steps: toArray(p.steps)
+    }));
+
+    if (typeof state.lastDate === 'undefined') state.lastDate = null;
 }
 
 function applyMidnightResetIfNeeded() {
